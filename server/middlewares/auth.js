@@ -1,107 +1,99 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+// Middleware to verify JWT token
+exports.auth = async (req, res, next) => {
+  try {
+    // Get token from cookies, body, or Authorization header
+    const token =
+      req.cookies?.jwt ||
+      req.body?.token ||
+      req.header("Authorization")?.replace("Bearer ", "");
 
-exports.auth = async(req,res,next)=>{
-    try
-    {
-        // fecth token from req and authorize it
-        const token = req.cookies.jwt 
-                      || req.body.token 
-                      || req.header("Authorization").replace("Bearer ","");
+    console.log("Token of userrr:", token);
 
-        console.log("Token of userrr : ", token);
-        if(!token)
-        {
-            res.status(401).json({
-                success:false,
-                message:"Token Missing",
-            });
-        }
-        // verify this token 
-        try
-        {
-            const payload = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = payload;
-            console.log("User type : ",req.user.accountType);
-
-        }catch(err)
-        {
-            res.status(500).json({
-                success:false,
-                message:"Token is invalid brother ",
-            })
-        }
-
-        next();
-     
-    }catch(err)
-    {
-        res.status(500).json({
-            success:false,
-            message:"Internal sever error in auth middleware"
-        })   
+    // If token is missing
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Token missing",
+      });
     }
-}
 
-exports.isStudent = async(req,res,next)=>{
-    try
-    {
-        if(req.user.accountType!=="Student")
-        {
-            res.status(401).json({
-                success:false,
-                message:"This Page is protected for you. You are not Student."
-            })
-        }
-        next();
-    }catch(err)
-    {
-        res.status(500).json({
-            success:false,
-            message:"Internal issue in Student"
-        })
+    try {
+      // Verify the token and attach payload to req.user
+      const payload = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = payload;
+      console.log("User type:", req.user.accountType);
+    } catch (err) {
+      return res.status(401).json({
+        success: false,
+        message: "Token is invalid",
+      });
     }
-}
 
+    next(); // Proceed to next middleware
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error in auth middleware",
+    });
+  }
+};
 
-exports.isInstructor = async(req,res,next)=>{
-    try
-    {
-        if(req.user.accountType!=="Instructor")
-        {
-            res.status(401).json({
-                success:false,
-                message:"This Page is protected for you. You are not Instructor."
-            })
-        }
-        next();
-    }catch(err)
-    {
-        res.status(500).json({
-            success:false,
-            message:"Internal issue in Instructor"
-        })
+// Middleware to check if user is a Student
+exports.isStudent = async (req, res, next) => {
+  try {
+    if (req.user.accountType !== "Student") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: You are not a Student.",
+      });
     }
-}
 
-exports.isAdmin = async(req,res,next)=>{
-    try
-    {
-        if(req.user.accountType!=="Admin")
-        {
-            res.status(401).json({
-                success:false,
-                message:"This Page is protected for you. You are not Admin"
-            })
-        }
-        next();
+    next(); // User is a Student
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error in isStudent middleware",
+    });
+  }
+};
 
-    }catch(err)
-    {
-        res.status(500).json({
-            success:false,
-            message:"Internal issue in Admin"
-        })
+// Middleware to check if user is an Instructor
+exports.isInstructor = async (req, res, next) => {
+  try {
+    if (req.user.accountType !== "Instructor") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: You are not an Instructor.",
+      });
     }
-}
+
+    next(); // User is an Instructor
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error in isInstructor middleware",
+    });
+  }
+};
+
+// Middleware to check if user is an Admin
+exports.isAdmin = async (req, res, next) => {
+  try {
+    if (req.user.accountType !== "Admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: You are not an Admin.",
+      });
+    }
+
+    next(); // User is an Admin
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error in isAdmin middleware",
+    });
+  }
+};
