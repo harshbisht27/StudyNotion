@@ -1,5 +1,5 @@
 
-const BASE_URL = "https://studynotion-server-xt3f.onrender.com"
+const BASE_URL = "https://studynotion-server-xt3f.onrender.com/api/v1"
 
 
 // AUTH ENDPOINTS
