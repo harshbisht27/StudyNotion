@@ -56,13 +56,16 @@ export async function buyCourse(token, courses, userDetails, navigate, dispatch)
         console.log("PRINTING orderResponse", orderResponse);
 
         const options = {
-            key: process.env.RAZORPAY_KEY, // rzp_test_ABMgWcpTJjuDxP
+            key: process.env.REACT_APP_RAZORPAY_KEY, 
             currency: orderResponse.data.message.currency,
             amount: `${orderResponse.data.message.amount}`,
             order_id:orderResponse.data.message.id,
             name:"StudyNotion",
             description: "Thank You for Purchasing the Course",
-            image:rzrpay,
+            image:
+    "https://yourdomain.com/logo.png" || // put your hosted logo URL here
+    "https://via.placeholder.com/150",   // fallback if above is missing
+
             prefill: {
                 name:`${userDetails.firstName} ${userDetails.lastName}`,
                 email:userDetails.email

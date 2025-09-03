@@ -67,5 +67,5 @@ export const sectionEndpoints = {
 export const studentEndpoints = {
   CAPTURE_PAYMENT_API : BASE_URL + "/payment/capturePayment",
   VERIFY_SIGNATURE_API : BASE_URL + "/payment/verifySignature",
-  SEND_PAYMENT_SUCCESSFUL_EMAIL_API : BASE_URL + "/payment/sendPaymentSuccessfullEmail",
+  SEND_PAYMENT_SUCCESSFUL_EMAIL_API : BASE_URL + "/payment/sendPaymentSuccessEmail",
 }
